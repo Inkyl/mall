@@ -24,7 +24,7 @@ export default {
     },
     animDuration: {
       type: Number,
-      default: 300
+      default: 400
     },
     moveRatio: {
       type: Number,
