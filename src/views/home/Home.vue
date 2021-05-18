@@ -8,8 +8,7 @@
       ref="scroll"
       :probe-type="probeType"
       @scroll="contentScroll"
-      :pull-up-load="pullUpLoad"
-      @pullingUp="loadMore">
+      :pull-up-load="pullUpLoad">
       <home-swiper :banners="banners"/>
       <home-recommend-view :recommends="recommends"/>
       <feature-view/>
@@ -65,9 +64,16 @@ export default {
   created() {
     //请求多个数据
     this.getHomeMultidata()
+
+    //请求商品数据
     this.getHomeGoods('pop')
     this.getHomeGoods('new')
     this.getHomeGoods('sell')
+
+    //监听Item中图片加载完成
+    this.$bus.$on('itemImageLoad', () => {
+      this.$refs.scroll.refresh()
+    })
   },
   computed: {
     showGoods() {
@@ -102,11 +108,7 @@ export default {
         this.isShowBackTop = false
       }
     },
-    loadMore() {
-      this.getHomeGoods(this.currentType)
 
-      this.$refs.scroll.scroll.refresh()
-    },
     /**
      *
      * 网络请求
@@ -114,7 +116,6 @@ export default {
     getHomeMultidata() {
       getHomeMultidata().then(res => {
         this.banners = res.data.banner.list
-        // console.log(this.banners)
         this.recommends = res.data.recommend.list
       })
     },
@@ -124,7 +125,6 @@ export default {
         //...是解构，将数组中所有元素都解析出来
         this.goods[type].list.push(...res.data.list)
         this.goods[type].page = page
-        this.$refs.scroll.finishPullUp()
       })
     },
 
